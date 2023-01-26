@@ -1,0 +1,70 @@
+{
+  "rows": [],
+  "columns": [
+    {
+      "width": "150px"
+    },
+    {
+      "width": "150px"
+    },
+    {
+      "width": "150px"
+    },
+    {
+      "width": "150px"
+    },
+    {
+      "width": "150px"
+    },
+    {
+      "width": "150px"
+    },
+    {
+      "width": "150px"
+    },
+    {
+      "width": "150px"
+    },
+    {
+      "width": "100px"
+    }
+  ],
+  "data": [
+    [
+      "0",
+      "First Name",
+      "Last Name",
+      "Gender",
+      "Country",
+      "Age",
+      "Date",
+      "Id",
+      ""
+    ],
+    [
+      "1",
+      "Dulce",
+      "Abril",
+      "Female",
+      "United States",
+      "32",
+      "15/10/2017",
+      "1562",
+      ""
+    ],
+    [
+      "2",
+      "Mara",
+      "Hashimoto",
+      "Female",
+      "Great Britain",
+      "25",
+      "16/08/2016",
+      "1582",
+      ""
+    ]
+  ],
+  "style": {},
+  "sheetName": "Sheet1",
+  "mergeCells": []
+}

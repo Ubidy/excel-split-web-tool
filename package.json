@@ -13,5 +13,11 @@
     "gh-pages": "^5.0.0",
     "svelte": "^3.55.1",
     "vite": "^4.0.4"
+  },
+  "dependencies": {
+    "@zach.codes/use-upload": "^1.0.1",
+    "convert-excel-to-json": "^1.7.0",
+    "lodash-es": "^4.17.21",
+    "svelte-sheets": "^1.0.0"
   }
 }
