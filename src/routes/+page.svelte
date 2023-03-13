@@ -1,6 +1,5 @@
 <script lang="ts">
-  import { base } from "$app/paths";
-  import { countBy, groupBy } from "lodash-es";
+  import { groupBy } from "lodash-es";
 
   import { useUpload } from "@zach.codes/use-upload/lib/svelte";
 
@@ -9,12 +8,6 @@
     url: "http://localhost:5173",
     body: files[0]
   }));
-
-  import excelToJson from "convert-excel-to-json";
-
-  // import { Sheet } from "svelte-sheets";
-
-  // import XLSX from "xlsx";
   import { Open, Sheet, download } from "svelte-sheets";
   import example from "./_example.json";
   let open;
@@ -29,8 +22,6 @@
   function onload(loadedSheets, loadedSheetNames) {
     sheets = loadedSheets;
     sheetNames = loadedSheetNames;
-
-    
   }
   // const decode = XLSX.utils.decode_cell;
   $: sheet = sheets[active];
@@ -78,13 +69,17 @@
       )
       .filter(Boolean);
 
+    // console.log("sheetsObject", sheetsObject);
+    // console.log("sheets", sheets);
+    // console.log("sheetNames", sheetNames);
+
     groupByTagName = groupBy(sheetsObject, "Tag Name");
-    const groupByTagNameCount = Math.ceil(Object.keys(groupByTagName).length / LIMIT);
-    console.log('groupByTagNameCount', groupByTagNameCount);
+    const groupByTagNameCount = Math.ceil(
+      Object.keys(groupByTagName).length / LIMIT
+    );
+    // console.log("groupByTagNameCount", groupByTagNameCount);
     groupByTagNameSplit = Array.from(Array(groupByTagNameCount).keys());
-    console.log("groupByTagNameSplit", groupByTagNameSplit);
-
-
+    // console.log("groupByTagNameSplit", groupByTagNameSplit);
   }
 </script>
 
@@ -92,13 +87,14 @@
 <button class="btn secondary" on:click={_ => open.click()}>
   <i class="fas fa-folder-open mr-1" />Open .xlsx File
 </button>
-  {#each groupByTagNameSplit as tagSplit, i}
-    <button class="btn secondary margin-right" on:click={_ => {
+{#each groupByTagNameSplit as tagSplit, i}
+  <button
+    class="btn secondary margin-right"
+    on:click={_ => {
       const utcDate = new Date().toJSON().slice(0, 10);
-      let multipleSheets = [];
+      // let multipleSheets = [];
       let count = 0;
-      let indexStart = i + 1;
-      let start = i > 0 ? (i*(LIMIT)) : i;
+      let start = i > 0 ? i * LIMIT : i;
       let end = start + LIMIT;
       for (const prop in groupByTagName) {
         let i = {
@@ -109,31 +105,31 @@
           sheetName: prop.substring(0, 30),
           data: groupByTagName[prop].map(g => {
             let gItem = [];
+
             for (const k in g) {
               gItem.push(g[k]);
             }
             return gItem;
           })
         };
-        console.log("count", count, start, end);
-        console.log("count >= start", count >= start);
-        console.log("count <= end", count < end);
-        //
-        
-        
+
+        i.data.unshift(sheet.data[0]);
+
+        // console.log('i', i.data);
+        // console.log("count", count, start, end);
+        // console.log("count >= start", count >= start);
+        // console.log("count <= end", count < end);
         if (count >= start && count < end) {
-          console.log('download');
+          // console.log("download");
           download([i], prop + "_" + utcDate + ".xlsx");
         }
         count++;
         // multipleSheets.push(i);
-        // console.log('iterator',groupByTagName[prop]);
       }
-      // console.log('multipleSheets', multipleSheets.length);
       // download(multipleSheets, "MultipleAgencies_" + utcDate + ".xlsx");
-    }}
-    >Download Part {i+1}</button>
-  {/each}
+    }}>Download Part {i + 1}</button
+  >
+{/each}
 {#if sheet}
   <Sheet
     bind:data={sheet.data}
