@@ -1,20 +1,20 @@
 <script lang="ts">
   import { base } from "$app/paths";
-  import { groupBy } from 'lodash-es';
+  import { countBy, groupBy } from "lodash-es";
 
   import { useUpload } from "@zach.codes/use-upload/lib/svelte";
 
   let [upload, state] = useUpload(({ files }) => ({
     method: "PUT",
     url: "http://localhost:5173",
-    body: files[0],
+    body: files[0]
   }));
 
   import excelToJson from "convert-excel-to-json";
 
   // import { Sheet } from "svelte-sheets";
 
-  import XLSX from "xlsx";
+  // import XLSX from "xlsx";
   import { Open, Sheet, download } from "svelte-sheets";
   import example from "./_example.json";
   let open;
@@ -23,130 +23,118 @@
   let active = 0;
   let sheets = [example];
   let sheetNames = [];
+  let groupByTagName = {};
+  let LIMIT = 10;
+  let groupByTagNameSplit = [];
   function onload(loadedSheets, loadedSheetNames) {
     sheets = loadedSheets;
     sheetNames = loadedSheetNames;
+
+    
   }
-  const decode = XLSX.utils.decode_cell;
+  // const decode = XLSX.utils.decode_cell;
   $: sheet = sheets[active];
-  $: decoded = selected?.[0] ? decode(selected[0]) : { c: 0, r: 0 };
+  // $: decoded = selected?.[0] ? decode(selected[0]) : { c: 0, r: 0 };
+
   $: {
-    console.log('sheet', sheet);
+    const sheetsObject = sheets[active].data
+      .map((d, i) =>
+        i > 0
+          ? {
+              [`${sheet.data[0][0]}`]: d[0],
+              [`${sheet.data[0][1]}`]: d[1],
+              [`${sheet.data[0][2]}`]: d[2],
+              [`${sheet.data[0][3]}`]: d[3],
+              [`${sheet.data[0][4]}`]: d[4],
+              [`${sheet.data[0][5]}`]: d[5],
+              [`${sheet.data[0][6]}`]: d[6]
+                .trim()
+                .replace("_", " - ")
+                .replace("Ubidy-", "Ubidy - ")
+                .replace('"Ubidy', "Ubidy")
+                .replace(' "', "")
+                .replace("UBIDY", "Ubidy")
+                .replace("Ubdiy", "Ubidy")
+                .replace("Ubidy Areeb", "Ubidy - Areeb")
+                .replace("Ubidy -  ", "Ubidy - ")
+                .replace("Ubidy -Jobskey", "Ubidy - Jobskey")
+                .trim()
+                .substring(0, 30),
+              [`${sheet.data[0][7]}`]: d[7],
+              [`${sheet.data[0][8]}`]: d[8],
+              [`${sheet.data[0][9]}`]: d[9],
+              [`${sheet.data[0][10]}`]: d[10],
+              [`${sheet.data[0][11]}`]: d[11],
+              [`${sheet.data[0][12]}`]: d[12],
+              [`${sheet.data[0][13]}`]: d[13],
+              [`${sheet.data[0][14]}`]: d[14],
+              [`${sheet.data[0][15]}`]: d[15],
+              [`${sheet.data[0][16]}`]: d[16],
+              [`${sheet.data[0][17]}`]: d[17],
+              [`${sheet.data[0][18]}`]: d[18],
+              [`${sheet.data[0][19]}`]: d[19]
+            }
+          : null
+      )
+      .filter(Boolean);
+
+    groupByTagName = groupBy(sheetsObject, "Tag Name");
+    const groupByTagNameCount = Math.ceil(Object.keys(groupByTagName).length / LIMIT);
+    console.log('groupByTagNameCount', groupByTagNameCount);
+    groupByTagNameSplit = Array.from(Array(groupByTagNameCount).keys());
+    console.log("groupByTagNameSplit", groupByTagNameSplit);
+
+
   }
 </script>
 
-<!-- <div>
-  {#if $state.done}
-    <div>Done uploading!</div>
-  {/if}
-  {#if $state.error}
-    <div>Error uploading: {$state.error}</div>
-  {/if}
-  {#if $state.loading}
-    <div>{$state.progress}% complete</div>
-  {/if}
-  <input
-    type="file"
-    on:change={(e) => {
-      console.log(e.currentTarget.files);
- 
-      const result = excelToJson({
-          sourceFile: e.currentTarget.files[0].name
-      });
-
-      console.log('result', result);
-      
-      
-      if (e.currentTarget.files) upload({ files: e.currentTarget.files });
-
-    }}
-  />
-</div>
-<h1>sveltekit-gh-pages</h1>
-<p>Deployed to GitHub Pages</p>
-<p>
-  Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation
-</p>
-<a href="{base}/about">About</a> -->
-
 <Open bind:open {onload} />
-<button class="btn secondary" on:click={(_) => open.click()}>
+<button class="btn secondary" on:click={_ => open.click()}>
   <i class="fas fa-folder-open mr-1" />Open .xlsx File
 </button>
-{#if sheet}
-  <button
-    class="btn secondary"
-    on:click={(_) => {
-      console.log('sheet', sheet);
-
-      const sheetsObject = sheet.data.map((d, i) => i > 0 ? ({ 
-        [`${sheet.data[0][0]}`]: d[0],
-        [`${sheet.data[0][1]}`]: d[1],
-        [`${sheet.data[0][2]}`]: d[2],
-        [`${sheet.data[0][3]}`]: d[3],
-        [`${sheet.data[0][4]}`]: d[4],
-        [`${sheet.data[0][5]}`]: d[5],
-        [`${sheet.data[0][6]}`]: d[6].trim().replace("_", " - ").replace("Ubidy-", "Ubidy - ").replace('"Ubidy', "Ubidy").replace(' "', "").replace("UBIDY", "Ubidy").replace("Ubdiy", "Ubidy").replace("Ubidy Areeb", "Ubidy - Areeb").replace("Ubidy -  ", "Ubidy - ").replace("Ubidy -Jobskey", "Ubidy - Jobskey"),
-        [`${sheet.data[0][7]}`]: d[7],
-        [`${sheet.data[0][8]}`]: d[8],
-        [`${sheet.data[0][9]}`]: d[9],
-        [`${sheet.data[0][10]}`]: d[10],
-        [`${sheet.data[0][11]}`]: d[11],
-        [`${sheet.data[0][12]}`]: d[12],
-        [`${sheet.data[0][13]}`]: d[13],
-        [`${sheet.data[0][14]}`]: d[14],
-        [`${sheet.data[0][15]}`]: d[15],
-        [`${sheet.data[0][16]}`]: d[16],
-        [`${sheet.data[0][17]}`]: d[17],
-        [`${sheet.data[0][18]}`]: d[18],
-        [`${sheet.data[0][19]}`]: d[19],
-        // [`${sheet.data[0][20]}`]: d[20],
-       }) : null ).filter(Boolean);
-
-      //  _.groupBy([{name: 'one'}, {name: 'one'}, {name: 'three'}], 'name');
-      // console.log('sheetsObject',groupBy(sheetsObject, "Tag Name"));
-
-      const groupByTagName = groupBy(sheetsObject, "Tag Name");
-      console.log('groupByTagName', groupByTagName);
-      
-      let multipleSheets = []
+  {#each groupByTagNameSplit as tagSplit, i}
+    <button class="btn secondary margin-right" on:click={_ => {
+      const utcDate = new Date().toJSON().slice(0, 10);
+      let multipleSheets = [];
+      let count = 0;
+      let indexStart = i + 1;
+      let start = i > 0 ? (i*(LIMIT)) : i;
+      let end = start + LIMIT;
       for (const prop in groupByTagName) {
         let i = {
           columns: sheet.columns,
           mergeCells: sheet.mergeCells,
-          row: sheet.row,
+          row: sheet.data[0],
           style: sheet.style,
-          sheetName: prop,
+          sheetName: prop.substring(0, 30),
           data: groupByTagName[prop].map(g => {
             let gItem = [];
-            
             for (const k in g) {
-              // console.log('g', g);
-              // console.log('gk', g[k]);
-              // gItem.push(g[k])
+              gItem.push(g[k]);
             }
+            return gItem;
           })
         };
-        multipleSheets.push(i);
+        console.log("count", count, start, end);
+        console.log("count >= start", count >= start);
+        console.log("count <= end", count < end);
+        //
+        
+        
+        if (count >= start && count < end) {
+          console.log('download');
+          download([i], prop + "_" + utcDate + ".xlsx");
+        }
+        count++;
+        // multipleSheets.push(i);
         // console.log('iterator',groupByTagName[prop]);
-        
-        
       }
-      // console.log('multipleSheets',multipleSheets);
-      // download(sheets, "example" + ".xlsx")}
-    }
-    
-    }
-  >
-    <i class="fas fa-download mr-1" />Download file
-  </button>
-{/if}
+      // console.log('multipleSheets', multipleSheets.length);
+      // download(multipleSheets, "MultipleAgencies_" + utcDate + ".xlsx");
+    }}
+    >Download Part {i+1}</button>
+  {/each}
 {#if sheet}
-  <!-- <input
-    bind:value={sheet.data[decoded.r][decoded.c]}
-    style={{ width: "50vw" }}
-    on:change={(v) => console.log("change", v)}
-  /> -->
   <Sheet
     bind:data={sheet.data}
     columns={sheet.columns}
@@ -158,16 +146,14 @@
     bind:selected
   />
 {/if}
-<!-- <a href="https://github.com/ticruz38/svelte-sheets" class="github-link">
-  <span />
-</a> -->
 <div class="sheet-names">
   {#each sheetNames as sn, i (sn)}
-    <span class:selected={sheet.sheetName == sn} on:click={(_) => (active = i)}
+    <span class:selected={sheet.sheetName == sn} on:click={_ => (active = i)}
       >{sn}</span
     >
   {/each}
 </div>
+
 <style>
   .sheet-names {
     text-align: center;
@@ -189,5 +175,9 @@
   }
   .selected {
     text-decoration: underline;
+  }
+
+  .margin-right {
+    margin-right: 5px;
   }
 </style>
