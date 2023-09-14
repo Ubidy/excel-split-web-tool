@@ -1,13 +1,6 @@
 <script lang="ts">
   import { groupBy } from "lodash-es";
 
-  import { useUpload } from "@zach.codes/use-upload/lib/svelte";
-
-  let [upload, state] = useUpload(({ files }) => ({
-    method: "PUT",
-    url: "http://localhost:5173",
-    body: files[0]
-  }));
   import { Open, Sheet, download } from "svelte-sheets";
   import example from "./_example.json";
   let open;
@@ -23,9 +16,7 @@
     sheets = loadedSheets;
     sheetNames = loadedSheetNames;
   }
-  // const decode = XLSX.utils.decode_cell;
   $: sheet = sheets[active];
-  // $: decoded = selected?.[0] ? decode(selected[0]) : { c: 0, r: 0 };
 
   $: {
     const sheetsObject = sheets[active].data
@@ -50,7 +41,7 @@
                 .replace("Ubidy -  ", "Ubidy - ")
                 .replace("Ubidy -Jobskey", "Ubidy - Jobskey")
                 .trim()
-                .substring(0, 30),
+                .substring(0, 75),
               [`${sheet.data[0][7]}`]: d[7],
               [`${sheet.data[0][8]}`]: d[8],
               [`${sheet.data[0][9]}`]: d[9],
@@ -69,17 +60,11 @@
       )
       .filter(Boolean);
 
-    // console.log("sheetsObject", sheetsObject);
-    // console.log("sheets", sheets);
-    // console.log("sheetNames", sheetNames);
-
     groupByTagName = groupBy(sheetsObject, "Tag Name");
     const groupByTagNameCount = Math.ceil(
       Object.keys(groupByTagName).length / LIMIT
     );
-    // console.log("groupByTagNameCount", groupByTagNameCount);
     groupByTagNameSplit = Array.from(Array(groupByTagNameCount).keys());
-    // console.log("groupByTagNameSplit", groupByTagNameSplit);
   }
 </script>
 
@@ -114,19 +99,11 @@
         };
 
         i.data.unshift(sheet.data[0]);
-
-        // console.log('i', i.data);
-        // console.log("count", count, start, end);
-        // console.log("count >= start", count >= start);
-        // console.log("count <= end", count < end);
         if (count >= start && count < end) {
-          // console.log("download");
           download([i], prop + "_" + utcDate + ".xlsx");
         }
         count++;
-        // multipleSheets.push(i);
       }
-      // download(multipleSheets, "MultipleAgencies_" + utcDate + ".xlsx");
     }}>Download Part {i + 1}</button
   >
 {/each}
