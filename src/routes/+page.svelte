@@ -54,7 +54,8 @@
               [`${sheet.data[0][16]}`]: d[16],
               [`${sheet.data[0][17]}`]: d[17],
               [`${sheet.data[0][18]}`]: d[18],
-              [`${sheet.data[0][19]}`]: d[19]
+              [`${sheet.data[0][19]}`]: d[19],
+              [`${sheet.data[0][20]}`]: d[20],
             }
           : null
       )
